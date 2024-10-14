@@ -1,4 +1,5 @@
 import json
+import datetime
 
 
 def load_operations(filename):
@@ -24,3 +25,25 @@ executed_operations = make_list_of_executed_operations(operations)
 # print(executed_operations)
 
 
+def output(operation):
+    op_date = operation['date'].split('T')
+    # print(op_date[0])
+    operation_date = datetime.date.fromisoformat(op_date[0]).strftime("%d.%m.%y")
+    if "from" in operation:
+        from_ = operation["from"].split()
+        from_account = from_.pop()
+        star_from_account = f"{from_account[:4]} {from_account[6:8]}** **** {from_account[-4:]}"
+        from_card_name = " ".join(from_)
+        from_name = f"{from_card_name} {star_from_account}"
+    else:
+        from_name = "..."
+
+    to_ = operation["to"].split()
+    to_account = to_.pop()
+    star_to_account = f"**{to_account[-4:]}"
+    to_name = " ".join(to_)
+
+    return (f"""{operation_date} {operation['description']}
+{from_name} -> {to_name} {star_to_account}
+{operation["operationAmount"]["amount"]} {operation["operationAmount"]["currency"]["name"]}
+""")
